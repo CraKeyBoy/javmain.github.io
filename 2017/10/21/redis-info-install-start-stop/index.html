@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>详解redis及Ubuntu的安装和运行 | Javmain&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="写作目的 了解redis的功能和特点 记录安装方法和步骤，方便复查 环境：ubuntu 16.04 LTS redis-4.0.2 每个知识点背后都有其原因，深究才会掌握知识的本真">
+<meta name="keywords" content="redis,Ubuntu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解redis及Ubuntu的安装和运行">
+<meta property="og:url" content="https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/index.html">
+<meta property="og:site_name" content="Javmain&#39;s Blog">
+<meta property="og:description" content="写作目的 了解redis的功能和特点 记录安装方法和步骤，方便复查 环境：ubuntu 16.04 LTS redis-4.0.2 每个知识点背后都有其原因，深究才会掌握知识的本真">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://blog.51itzone.cn/images/post/2017/10/redis_th.png">
+<meta property="og:updated_time" content="2018-08-20T02:11:16.649Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="详解redis及Ubuntu的安装和运行">
+<meta name="twitter:description" content="写作目的 了解redis的功能和特点 记录安装方法和步骤，方便复查 环境：ubuntu 16.04 LTS redis-4.0.2 每个知识点背后都有其原因，深究才会掌握知识的本真">
+<meta name="twitter:image" content="https://blog.51itzone.cn/images/post/2017/10/redis_th.png">
+    
+
+    
+        <link rel="alternate" href="/atom.xml" title="Javmain&#39;s Blog" type="application/atom+xml" />
+    
+
+    
+        <link rel="icon" href="/images/favicon.ico" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-113148178-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?99bea4bb2552cc23a7cf0a4a0fab55a4";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Javmain&#39;s Blog</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/books">Books</a>
+                
+                    <a class="main-nav-link" href="//wiki.51itzone.cn">Wiki</a>
+                
+                    <a class="main-nav-link" href="/about">关于我</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="https://www.gravatar.com/avatar/126af6f277785283e4588bbd4870fc21" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/books">Books</a></td>
+                
+                    <td><a class="main-nav-link" href="//wiki.51itzone.cn">Wiki</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于我</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            <section id="main"><article id="post-redis-info-install-start-stop" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            详解redis及Ubuntu的安装和运行
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/10/21/redis-info-install-start-stop/">
+            <time datetime="2017-10-21T06:10:25.000Z" itemprop="datePublished">2017-10-21</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/Redis/">Redis</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Ubuntu/">Ubuntu</a>, <a class="tag-link" href="/tags/redis/">redis</a>
+    </div>
+
+                        
+   <div class="leancloud_counts"</div>
+        <i class="fa fa-eye"></i>
+        <span class="leancloud_visitors" id="/2017/10/21/redis-info-install-start-stop/" class="leancloud_visitors" data-flag-title="详解redis及Ubuntu的安装和运行">
+            <span class="leancloud-visitors-count"><i class="fa fa-spinner fa-spin fa-fw margin-bottom"></i></span>
+        </span>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="写作目的"><a href="#写作目的" class="headerlink" title="写作目的"></a>写作目的</h1><ol>
+<li>了解redis的功能和特点</li>
+<li>记录安装方法和步骤，方便复查</li>
+<li>环境：ubuntu 16.04 LTS redis-4.0.2</li>
+<li>每个知识点背后都有其原因，深究才会掌握知识的本真</li>
+</ol>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>由Salvatore Sanfilippo开发于2009年，到今年9月21号已经发布了197个<a href="https://github.com/antirez/redis/releases/" target="_blank" rel="noopener">release</a>版本，目前最新稳定版是4.0.2。Redis是一个开源的使用ANSIC语言编写、支持网络、可基于内存亦可持久化的日志型、灵活的、开源的、key-value存储系统。它允许用户存储大量的数据，而且没有关系数据库的限制。Redis和Memcached类似，但是解决了断电后数据完全丢失的情况(由于redis是异步复制，因此不保证数据完全不丢失，只是解决了不丢失的可能性），而且它支持更多元化的value类型，而且性能相对高效。同时它也支持多种编程语言调用：ActionScript, C, C++, C#, Chicken Scheme, Clojure, Common Lisp, D, Dart, Erlang, Go, Haskell, Haxe, Io, Java, JavaScript (Node.js), Julia, Lua, Objective-C, OCaml, Perl, PHP, Pure Data, Python, R[16], Racket, Ruby, Rust, Scala, Smalltalk and Tcl，并且通过Redis Sentinel提供高可用，通过Redis Cluster提供自动分片。 Redis还支持主从异步复制，非常快的非阻塞初次同步、网络断开时自动重连局部重同步。<br>其他特性包括：</p>
+<ul>
+<li>事务</li>
+<li>订阅/发布</li>
+<li>Lua脚本</li>
+<li>带TTL的键</li>
+<li>LRU回收健</li>
+<li>自动故障转移(failover)</li>
+</ul>
+<h2 id="1、数据模型"><a href="#1、数据模型" class="headerlink" title="1、数据模型"></a>1、数据模型</h2><p>作为Key-value型数据库，Redis也提供了键（Key）和键值（Value）的映射关系。但是，除了常规的数值或字符串，Redis的键值还可以是以下形式：==Lists, Sets, Sorted Sets, Hashes, <a href="https://en.wikipedia.org/wiki/HyperLogLog/" target="_blank" rel="noopener">HyperLogLogs</a>,Bitmaps,<a href="https://en.wikipedia.org/wiki/Geohash/" target="_blank" rel="noopener">Geospatial</a> data(地理空间数据 since Redis 3.2)==。键值的数据类型决定了该键值支持的操作。Redis支持诸如列表、集合或有序集合的交集、并集、差集等高级原子操作；同时，如果键值的类型是普通数字，Redis则提供自增等原子操作。</p>
+<h2 id="2、持久化"><a href="#2、持久化" class="headerlink" title="2、持久化"></a>2、持久化</h2><p>通常，Redis将数据全部存储于内存中，或被配置为使用虚拟内存(since Redis 2.3)，此功能已经被弃用，来保存到磁盘上。<br>现在Redis可以通过以下两种方式实现数据持久化:</p>
+<ol>
+<li>使用快照的方式，异步将内存中的数据不断写入磁盘；</li>
+<li>使用AOF(append-only file)(since Redis 1.1)的方式，类似MySQL的日志方式，以增量的方式记录每次更新的日志。</li>
+</ol>
+<p>前者性能较高，但是可能会引起一定程度的数据丢失；后者相反。默认情况下Redis每2秒会写入数据到文件系统，当然如果需要这个时间是可配置的。如果系统宕机，那么只会有几秒的数据会丢失。如果对此感兴趣，可以阅读作者的博文 <a href="http://oldblog.antirez.com/post/redis-persistence-demystified.html/" target="_blank" rel="noopener">Redis persistence demystified</a>或者此文<a href="http://powersoft.iteye.com/blog/2147091/" target="_blank" rel="noopener">Redis官方文档(13) ——持久化</a></p>
+<h2 id="3、复制"><a href="#3、复制" class="headerlink" title="3、复制"></a>3、复制</h2><p>Redis支持将数据同步到多台从库上，这种特性对提高读取性能非常有益。Replication是Redis最重要的功能，但也是坑最多的功能，想掌握好，需要了解这些内容。</p>
+<ul>
+<li>Redis 采用异步复制(since Redis 2.8)。 一个主服务器可以拥有多个从服务器。</li>
+<li>从服务器可以接受其他从服务器的连接会形成==图状结构==。</li>
+<li>Redis 的复制在主服务器上是非阻塞的。</li>
+<li>Redis 的复制在从服务器上也是非阻塞的。</li>
+<li>复制可以用来支持可伸缩性，用多个从服务器处理只读查询(例如，繁重的 SORT 操作可以分配到从服务器上)，也可以仅仅作为数据冗余。</li>
+</ul>
+<h2 id="4-高可用"><a href="#4-高可用" class="headerlink" title="4 高可用"></a>4 高可用</h2><p>Redis Sentinel 是 Redis 的官方高可用解决方案，是设计用来帮助管理 Redis 实例的系统。用于完成下面 4 个任务：</p>
+<ul>
+<li>监控(Monitoring)。Sentinel 不断检查你的主从实例是否运转正常。</li>
+<li>通知(Notification)。Sentinel 可以通过 API 来通知系统管理员，或者其他计算机程序，被监控的 Redis 实例出了问题。</li>
+<li>自动故障转移(Automatic failover)。如果一台主服务器运行不正常，Sentinel会开始一个故障转移过程，将从服务器提升为主服务器，配置其他的从服务器使用新的主服务器，使用 Redis 服务器的应用程序在连接时会收到新的服务器地址通知。</li>
+<li>配置提供者(Configuration provider)。Sentinel 充当客户端服务发现的权威来源：客户端连接到 Sentinel 来询问某个服务的当前 Redis主服务器的地址。当故障转移发生时，Sentinel 会报告新地址。</li>
+</ul>
+<h2 id="5-集群"><a href="#5-集群" class="headerlink" title="5 集群"></a>5 集群</h2><p>支持分布式系统，成为Redis能持续不断发展的动力，也是能被广泛使用的亮点。我们看看redis集群都能做什么</p>
+<ul>
+<li>Redis 集群提供一种运行 Redis 的方式，数据被自动的分片到多个 Redis 节点。</li>
+<li>集群不支持处理多个键的命令，因为这需要在 Redis 节点间移动数据，使得 Redis 集群不能提供像 Redis 单点那样的性能，在高负载下会表现得不可预知。</li>
+<li>Redis 集群也提供在网络分割（partitions）期间的一定程度的可用性，这就是在现实中当一些节点失败或者不能通信时能继续进行运转的能力。</li>
+</ul>
+<p>当然上文只是对 Redis 功能的一个概览，如果想深入学习，每个特性都可以写一系列文章，本文就不再详细展开叙述。</p>
+<h1 id="安装及运行-redis"><a href="#安装及运行-redis" class="headerlink" title="安装及运行 redis"></a>安装及运行 redis</h1><h2 id="1、检测是否有安装redis"><a href="#1、检测是否有安装redis" class="headerlink" title="1、检测是否有安装redis"></a>1、检测是否有安装redis</h2><p>使用linux命令 <a href="http://man.linuxde.net/whereis/" target="_blank" rel="noopener">whereis</a> 查找是否安装 redis-cli 和 redis-server</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu-linux:~$ whereis redis-cli</span><br><span class="line">redis-cli:</span><br><span class="line"></span><br><span class="line">ubuntu@ubuntu-linux:~$ whereis redis-server</span><br><span class="line">redis-server:</span><br></pre></td></tr></table></figure>
+<h2 id="2、安装-Redis"><a href="#2、安装-Redis" class="headerlink" title="2、安装 Redis"></a>2、安装 Redis</h2><h3 id="通过-apt-get-命令安装"><a href="#通过-apt-get-命令安装" class="headerlink" title="通过 apt-get 命令安装"></a>通过 apt-get 命令安装</h3><ul>
+<li>命令：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install redis-server</span><br></pre></td></tr></table></figure>
+<h3 id="通过下载官方安装包进行安装并解压"><a href="#通过下载官方安装包进行安装并解压" class="headerlink" title="通过下载官方安装包进行安装并解压"></a>通过下载官方安装包进行安装并解压</h3><ul>
+<li>本文不是用 root 用户安装</li>
+<li>命令：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget http://download.redis.io/releases/redis-4.0.2.tar.gz</span><br><span class="line">tar -zxvf redis-4.0.2.tar.gz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>移到解压后的 Redis 到/usr/local/redis-4.0.2</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mv redis-4.0.2 /usr/local/</span><br></pre></td></tr></table></figure>
+<ul>
+<li>编译以及安装</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/redis-4.0.2</span><br><span class="line">make</span><br><span class="line">suod make install</span><br></pre></td></tr></table></figure>
+<h2 id="3、启动-Redis"><a href="#3、启动-Redis" class="headerlink" title="3、启动 Redis"></a>3、启动 Redis</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/bin/redis-server</span><br></pre></td></tr></table></figure>
+<p>==注意：非 root 启动,如果用命令直接关闭redis，redis无法结束进程==</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">11462:M 21 Nov 17:15:54.777 # User requested shutdown...</span><br><span class="line">11462:M 21 Nov 17:15:54.777 * Saving the final RDB snapshot before exiting.</span><br><span class="line">11462:M 21 Nov 17:15:54.777 # Failed opening the RDB file dump.rdb (in server root dir /usr/local/bin) for saving: Permission denied</span><br><span class="line">11462:M 21 Nov 17:15:54.777 # Error trying to save the DB, can't exit.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>指定配置文件启动</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sudo /usr/local/bin/redis-server /usr/local/redis-4.0.2/redis.conf &amp;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>检测后台进程是否存在</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef |grep redis</span><br></pre></td></tr></table></figure>
+<ul>
+<li>检测 6379 端口是否在监听</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -lntp | grep 6379</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 redis-cli 进行连接</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@ubuntu-linux:/usr/local/bin$ redis-cli</span><br><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">(empty list or set)</span><br><span class="line">127.0.0.1:6379&gt; set redis redis-4.0.2</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get redis</span><br><span class="line">"redis-4.0.2"</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="4、停止-Redis"><a href="#4、停止-Redis" class="headerlink" title="4、停止 Redis"></a>4、停止 Redis</h2><ul>
+<li>使用 redis-cli 停止</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli shutdown</span><br></pre></td></tr></table></figure>
+<ul>
+<li>或在 redis-cli 命令行中停止</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; shutdown</span><br><span class="line">not connected&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>直接 kill 掉进程（ Redis 可以妥善处理 SIGTERM 信号）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill -9 PID</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Redis 是开发人员必备的利器，掌握好 Redis 的功能特性并使用到实际场景才能真正体会到 Redis 的带来的便利。目前 Redis 主要应用场景如下：</p>
+<ul>
+<li>构建高可用的缓存系统</li>
+<li>积分排行榜（ sorted set ）</li>
+<li>计数器</li>
+<li>分布式锁</li>
+<li>消息中间件（ message queue / pub/sub)</li>
+<li>web服务器的session管理</li>
+</ul>
+<blockquote>
+<p>参考资料</p>
+<ol>
+<li><a href="https://redis.io/documentation/" target="_blank" rel="noopener">Redis</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Redis/" target="_blank" rel="noopener">Redis wikipedia</a></li>
+<li><a href="https://github.com/JasonLai256/the-little-redis-book/blob/dcb68a2a1cbf1a4e328dc5eb980f4f525ab291c6/cn/redis.md" target="_blank" rel="noopener">the-little-redis-book</a></li>
+<li><a href="http://www.iteye.com/blogs/subjects/redis3/" target="_blank" rel="noopener">Redis3.0官方文档翻译和源码解析</a></li>
+</ol>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            
+
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/" data-id="cjn2wsov0000mhu3exnkjxfn6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/05/08/python-pipenv-how-use/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    python 虚拟环境管理 pipenv 使用
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2016/02/26/linkedlist-analysis-and-use/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">LinkedList 实现分析及使用</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+    
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/';
+        
+
+        this.page.title = '详解redis及Ubuntu的安装和运行';
+        
+        this.page.identifier = 'redis-info-install-start-stop';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'javmain' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+</section>
+            <section id="sidebar">
+                
+                    
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="https://www.gravatar.com/avatar/126af6f277785283e4588bbd4870fc21?s=128" />
+            <h2 id="name">Javmain</h2>
+            <h3 id="title">Web Developer &amp; Java Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>BeiJing, China</span>
+            <a id="follow" target="_blank" href="https://github.com/javmain/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                6
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                6
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/javmain/hexo-theme-icarus" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/atom.xml" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+                
+                
+                    
+<aside id="widgets">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/05/08/python-pipenv-how-use/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/post/2018/05/pipenv_thumbnail.jpg)" alt="python 虚拟环境管理 pipenv 使用" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/python/">python</a></p>
+                            <p class="item-title"><a href="/2018/05/08/python-pipenv-how-use/" class="title">python 虚拟环境管理 pipenv 使用</a></p>
+                            <p class="item-date"><time datetime="2018-05-08T02:43:22.000Z" itemprop="datePublished">2018-05-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/10/21/redis-info-install-start-stop/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/post/2017/10/redis_th.png)" alt="详解redis及Ubuntu的安装和运行" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/Redis/">Redis</a></p>
+                            <p class="item-title"><a href="/2017/10/21/redis-info-install-start-stop/" class="title">详解redis及Ubuntu的安装和运行</a></p>
+                            <p class="item-date"><time datetime="2017-10-21T06:10:25.000Z" itemprop="datePublished">2017-10-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/02/26/linkedlist-analysis-and-use/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/post/2016/02/linked_list.png)" alt="LinkedList 实现分析及使用" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/Java/">Java</a></p>
+                            <p class="item-title"><a href="/2016/02/26/linkedlist-analysis-and-use/" class="title">LinkedList 实现分析及使用</a></p>
+                            <p class="item-date"><time datetime="2016-02-26T10:46:00.000Z" itemprop="datePublished">2016-02-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/02/20/ArrayList-Vector-analysis/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/post/2016/02/array_list.jpg)" alt="ArrayList &amp; Vector 实现分析" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/Java/">Java</a></p>
+                            <p class="item-title"><a href="/2016/02/20/ArrayList-Vector-analysis/" class="title">ArrayList &amp; Vector 实现分析</a></p>
+                            <p class="item-date"><time datetime="2016-02-20T10:46:00.000Z" itemprop="datePublished">2016-02-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/02/13/ubuntu-install-java-two-method/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/post/2016/02/ubuntu_th.png)" alt="Ubuntu 下安装 Oracle JDK 的两种方法" class="thumbnail-image"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Technology/">Technology</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/Technology/Java/">Java</a></p>
+                            <p class="item-title"><a href="/2016/02/13/ubuntu-install-java-two-method/" class="title">Ubuntu 下安装 Oracle JDK 的两种方法</a></p>
+                            <p class="item-date"><time datetime="2016-02-13T12:50:25.000Z" itemprop="datePublished">2016-02-13</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/LifeStyle/">LifeStyle</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Technology/">Technology</a><span class="category-list-count">5</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Technology/Java/">Java</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Technology/Redis/">Redis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Technology/python/">python</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LifeStyle/">LifeStyle</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/">Ubuntu</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pipenv/">pipenv</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/LifeStyle/" style="font-size: 10px;">LifeStyle</a> <a href="/tags/Ubuntu/" style="font-size: 15px;">Ubuntu</a> <a href="/tags/pipenv/" style="font-size: 10px;">pipenv</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://lucumt.info/">飞狐的部落格</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://ifeve.com/">并发编程网</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.hollischuang.com/">HollisChuang&#39;s Blog</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.jasongj.com">郭俊 Jason</a>
+                    </li>
+                
+                    <li>
+                        <a href="https://coolshell.cn/">酷壳</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.raychase.net/">四火的唠叨</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.ruanyifeng.com/blog/">阮一峰</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://www.baeldung.com/">Baeldung</a>
+                    </li>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+                
+            </section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018  | <i class="fa fa-user" aria-hidden="true"></i> javmain | 
+            
+                <span id="busuanzi_container_site_pv"><i class="fa fa-heart"></i> : <span id="busuanzi_value_site_pv"></span></span> | 
+                <span id="busuanzi_container_site_uv"><i class="fa fa-user-circle-o"></i> : <span id="busuanzi_value_site_uv"></span></span>
+            
+            </br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. | Theme by <a href="http://github.com/ppoffice">PPOffice</a>.</br>
+            <p style="display: none">Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+        </div>
+    </div>
+</footer>
+        
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js"></script>
+    
+    
+        <script>
+            $(function() {
+                loadScript('//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',function(){
+                    console.log("load busuanzi js success");
+                });
+            });
+        </script>
+    
+    
+          <script>
+      $(function() {
+        loadScript('//cdn1.lncld.net/static/js/3.5.0/av-min.js',function(){
+          AV.init({
+                appId: "XJGg2PjzVR0eHFAOBTDDfQPu-gzGzoHsz",
+                appKey: "tjc5kbiSrtrcMFqPCG5InSh0"
+              });
+
+              $(function() {
+                var Counter = AV.Object.extend("blog_Counter");
+                if ($('.leancloud_visitors').length == 1) {
+                  addCount(Counter);
+                } else if ($('.article-title').length > 1) {
+                  showTime(Counter);
+                } else if ($('.timeline-article-title').length > 1) {
+                  showTime(Counter);
+                }
+              });
+        });
+      });
+  </script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+
+      query.find().then(function (results) {
+        var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+        if (results.length === 0) {
+          $visitors.find(COUNT_CONTAINER_REF).text(0);
+          return;
+        }
+
+        for (var i = 0; i < results.length; i++) {
+          var item = results[i];
+          var url = item.get('url');
+          var time = item.get('time');
+          var element = document.getElementById(url);
+          $(element).find(COUNT_CONTAINER_REF).text(time);
+        }
+        for(var i = 0; i < entries.length; i++) {
+          var url = entries[i];
+          var element = document.getElementById(url);
+          var countSpan = $(element).find(COUNT_CONTAINER_REF);
+          if( countSpan.text() == '') {
+            countSpan.text(0);
+          }
+        }
+      }, function (error) {
+        console.log('Error: ' + error.code + ' ' + error.message);
+      });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find().then(function (results) {
+        if (results.length > 0) {
+            var counter = results[0];
+            counter.increment("time");
+            counter.save().then(function(counter) {
+              // 成功
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            }, function(error) {
+              // 失败
+              console.log('Failed to save Visitor num, with error message: ' + error.message);
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save().then(function(newcounter) {
+              // 成功
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+            }, function(error) {
+              // 失败
+              console.log('Failed to create');
+            });
+          }
+      }, function (error) {
+        console.log('Error:' + error.code + " " + error.message);
+      });
+    }
+  </script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
