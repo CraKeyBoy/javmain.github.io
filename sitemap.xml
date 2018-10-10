@@ -37,13 +37,6 @@
   </url>
   
   <url>
-    <loc>https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/</loc>
-    
-    <lastmod>2018-08-20T02:11:16.649Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.51itzone.cn/2016/02/13/ubuntu-install-java-two-method/</loc>
     
     <lastmod>2018-08-20T02:11:16.649Z</lastmod>
@@ -51,14 +44,21 @@
   </url>
   
   <url>
-    <loc>https://blog.51itzone.cn/2016/02/26/linkedlist-analysis-and-use/</loc>
+    <loc>https://blog.51itzone.cn/2017/10/21/redis-info-install-start-stop/</loc>
+    
+    <lastmod>2018-08-20T02:11:16.649Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.51itzone.cn/2018/05/08/python-pipenv-how-use/</loc>
     
     <lastmod>2018-08-20T02:11:16.648Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.51itzone.cn/2018/05/08/python-pipenv-how-use/</loc>
+    <loc>https://blog.51itzone.cn/2016/02/26/linkedlist-analysis-and-use/</loc>
     
     <lastmod>2018-08-20T02:11:16.648Z</lastmod>
     
